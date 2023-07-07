@@ -1,0 +1,250 @@
+lat3A
+<!DOCTYPE html>
+<html>
+<head>
+<title>Form Input Angka</title>
+</head>
+<body>
+<form action="Lat3_3b_NIM.php" method="POST">
+Masukkan Angka: <input type="number" name="angka">
+<input type="submit" value="Hitung">
+</form>
+</body>
+</html>
+
+LAT3B
+<?php
+session_start();
+
+// Fungsi untuk menghitung faktorial
+function hitungFaktorial($angka) {
+  if ($angka == 0) {
+    return 1;
+  } else {
+    return $angka * hitungFaktorial($angka - 1);
+  }
+}
+
+if (isset($_POST['angka'])) {
+  $angka = $_POST['angka'];
+  $faktorial = hitungFaktorial($angka);
+
+  // Simpan nilai angka, faktorial, NIM, dan nama dalam variabel session
+  $_SESSION['data'] = array(
+    'angka' => $angka,
+    'faktorial' => $faktorial,
+    'nim' => 'NIM Anda',
+    'nama' => 'Nama Anda'
+  );
+
+  // Redirect ke halaman Lat3_3c_NIM.php
+  header("Location: Lat3_3c_NIM.php");
+  exit();
+}
+?>
+
+LAT 3C
+<?php
+session_start();
+
+// Tampilkan nilai variabel yang disimpan dalam session
+if (isset($_SESSION['data'])) {
+  $data = $_SESSION['data'];
+  echo "Angka: " . $data['angka'] . "<br>";
+  echo "Faktorial: " . $data['faktorial'] . "<br>";
+  echo "NIM: " . $data['nim'] . "<br>";
+  echo "Nama: " . $data['nama'] . "<br>";
+}
+
+// Hapus seluruh variabel yang tersimpan dalam session
+session_unset();
+session_destroy();
+?>
+
+
+LATIHAN 6
+LOGIN.PHP
+<?php
+session_start();
+
+if (isset($_POST['submit'])) {
+  $username = $_POST['username'];
+  $password = $_POST['password'];
+
+  if ($username == 'admin' && $password == 'admin') {
+    $_SESSION['user'] = $username;
+    header("Location: Lat3_4a_NIM.php");
+    exit();
+  } else {
+    $error = "Username atau password salah";
+  }
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Login</title>
+</head>
+<body>
+<h1>Login</h1>
+<form action="login.php" method="POST">
+<p>
+<label for="username">Username:</label>
+<input type="text" name="username" id="username" required>
+</p>
+<p>
+<label for="password">Password:</label>
+<input type="password" name="password" id="password" required>
+</p>
+<p>
+<input type="submit" name="submit" value="Login">
+</p>
+<?php if (isset($error)) { ?>
+<p style="color: red;"><?php echo $error; ?></p>
+<?php } ?>
+</form>
+</body>
+</html>
+
+LAT4A
+<?php
+session_start();
+
+if (!isset($_SESSION['user'])) {
+  header("Location: login.php");
+  exit();
+}
+
+if (isset($_POST['submit'])) {
+  $cdOrder = $_POST['cd_order'];
+  $dvdOrder = $_POST['dvd_order'];
+
+  setcookie("cd_order", $cdOrder);
+  setcookie("dvd_order", $dvdOrder);
+
+  header("Location: Lat3_4b_NIM.php");
+  exit();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Order Form</title>
+</head>
+<body>
+<h1>Order Form</h1>
+<p>Welcome, <?php echo $_SESSION['user']; ?>!</p>
+<form action="Lat3_4a_NIM.php" method="POST">
+<p> Order CD, amount :
+<input type="text" name="cd_order" value="<?php echo isset($_COOKIE['cd_order']) ? $_COOKIE['cd_order'] : '0'; ?>" size="2" maxlength="2" />
+</p>
+<p> Order DVD, amount :
+<input type="text" name="dvd_order" value="<?php echo isset($_COOKIE['dvd_order']) ? $_COOKIE['dvd_order'] : '0'; ?>" size="2" maxlength="2" />
+</p>
+<input type="submit" value="Add To Cart" name="submit" />
+</form>
+<p><a href="logout.php">Logout</a></p>
+</body>
+</html>
+
+LAT4B
+<?php
+session_start();
+
+if (!isset($_SESSION['user'])) {
+  header("Location: login.php");
+  exit();
+}
+
+function hitungFaktorial($angka) {
+  if ($angka == 0) {
+    return 1;
+  } else {
+    return $angka * hitungFaktorial($angka - 1);
+  }
+}
+
+if (isset($_POST['cd_order']) && isset($_POST['dvd_order'])) {
+  $cdOrder = $_POST['cd_order'];
+  $dvdOrder = $_POST['dvd_order'];
+
+  setcookie("cd_order", $cdOrder);
+  setcookie("dvd_order", $dvdOrder);
+
+  $faktorialCD = hitungFaktorial($cdOrder);
+  $faktorialDVD = hitungFaktorial($dvdOrder);
+
+  $_SESSION['data'] = array(
+    'cd_order' => $cdOrder,
+    'dvd_order' => $dvdOrder,
+    'faktorialCD' => $faktorialCD,
+    'faktorialDVD' => $faktorialDVD
+  );
+
+  header("Location: Lat3_4c_NIM.php");
+  exit();
+}
+?>
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>Order Processing</title>
+</head>
+<body>
+<h1>Order Processing</h1>
+<p>Welcome, <?php echo $_SESSION['user']; ?>!</p>
+<p>Your order:</p>
+<ul>
+  <li>CD: <?php echo $_COOKIE['cd_order']; ?> pieces</li>
+  <li>DVD: <?php echo $_COOKIE['dvd_order']; ?> pieces</li>
+</ul>
+<p><a href="logout.php">Logout</a></p>
+</body>
+</html>
+
+LAT4C
+<?php
+session_start();
+
+if (!isset($_SESSION['user'])) {
+  header("Location: login.php");
+  exit();
+}
+
+if (!isset($_SESSION['data'])) {
+  header("Location: Lat3_4a_NIM.php");
+  exit();
+}
+
+$data = $_SESSION['data'];
+
+?>
+
+LOGOUT.PHP
+<!DOCTYPE html>
+<html>
+<head>
+<title>Order Summary</title>
+</head>
+<body>
+<h1>Order Summary</h1>
+<p>Welcome, <?php echo $_SESSION['user']; ?>!</p>
+<p>Your order:</p>
+<ul>
+  <li>CD: <?php echo $data['cd_order']; ?> pieces (Faktorial: <?php echo $data['faktorialCD']; ?>)</li>
+  <li>DVD: <?php echo $data['dvd_order']; ?> pieces (Faktorial: <?php echo $data['faktorialDVD']; ?>)</li>
+</ul>
+<p><a href="logout.php">Logout</a></p>
+</body>
+</html>
+
+<?php
+session_start();
+session_unset();
+session_destroy();
+header("Location: login.php");
+exit();
+?>
